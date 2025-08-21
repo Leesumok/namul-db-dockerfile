@@ -23,6 +23,3 @@ RUN echo "net:" > /etc/mongod.conf && \
 # 헬스체크 수정 (인증 정보 포함)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD mongosh --quiet --eval "db.adminCommand('ping').ok" || exit 1
-
-# 기본 MongoDB 엔트리포인트 사용 (설정 파일 없이)
-CMD ["mongod", "--bind_ip_all"]

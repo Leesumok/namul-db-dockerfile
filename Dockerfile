@@ -1,20 +1,15 @@
 FROM mongo:7.0
 
-# 환경변수 설정
-ENV MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-ENV MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-ENV MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+# 환경 변수 (CloudType에서 env로 세팅 가능)
+ENV MONGO_INITDB_ROOT_USERNAME=admin
+ENV MONGO_INITDB_ROOT_PASSWORD=secret
+ENV MONGO_INITDB_DATABASE=testdb
 
-# 간단한 권한 설정
+# init 스크립트 (여기에 넣으면 자동 실행됨)
+COPY init.js /docker-entrypoint-initdb.d/
+
+# non-root 권한 맞추기
 RUN chown -R 999:999 /data/db
 USER 999
 
-# 포트 노출
 EXPOSE 27017
-
-# 헬스체크
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD mongosh --eval "db.adminCommand('ping')" --quiet || exit 1
-
-# MongoDB 직접 시작 (복잡한 초기화 스크립트 없이)
-CMD ["mongod", "--bind_ip_all", "--port", "27017"]

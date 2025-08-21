@@ -27,5 +27,5 @@ USER mongodb
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD mongosh --eval "db.adminCommand('ping')" --quiet || exit 1
 
-# MongoDB 직접 실행 (초기화 스크립트 제거)
-CMD ["mongod", "--bind_ip_all", "--auth"]
+# MongoDB 기본 엔트리포인트 사용 (환경변수 자동 처리)
+CMD ["mongod", "--bind_ip_all"]

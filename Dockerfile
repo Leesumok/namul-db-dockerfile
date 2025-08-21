@@ -17,9 +17,9 @@ COPY mongod.conf /etc/mongod.conf
 COPY init-mongo.sh /usr/local/bin/init-mongo.sh
 
 # 필요한 디렉토리 생성 및 권한 설정
-RUN mkdir -p /data/db /data/configdb /var/log/mongodb /var/run/mongodb && \
-    chown -R mongodb:mongodb /data/db /data/configdb /var/log/mongodb /var/run/mongodb && \
-    chmod -R 755 /data/db /data/configdb /var/log/mongodb /var/run/mongodb && \
+RUN mkdir -p /data/db /data/configdb && \
+    chown -R mongodb:mongodb /data/db /data/configdb && \
+    chmod -R 755 /data/db /data/configdb && \
     chown mongodb:mongodb /etc/mongod.conf /usr/local/bin/init-mongo.sh && \
     chmod +x /usr/local/bin/init-mongo.sh
 

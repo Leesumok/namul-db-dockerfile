@@ -3,12 +3,10 @@ set -e
 
 echo "Starting MongoDB initialization..."
 
-# 디렉토리 권한 확인 및 생성 (non-root 사용자로 실행)
-if [ ! -d "/var/log/mongodb" ]; then
-    mkdir -p /var/log/mongodb 2>/dev/null || echo "Log directory already exists"
-fi
-if [ ! -d "/var/run/mongodb" ]; then
-    mkdir -p /var/run/mongodb 2>/dev/null || echo "Run directory already exists"
+# 데이터 디렉토리 확인
+if [ ! -d "/data/db" ]; then
+    echo "Error: /data/db directory not found"
+    exit 1
 fi
 
 # MongoDB를 백그라운드에서 시작 (인증 없이)

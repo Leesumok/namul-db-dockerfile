@@ -1,15 +1,14 @@
 FROM mongo:7.0
 
-# 환경 변수 (CloudType에서 env로 세팅 가능)
-ENV MONGO_INITDB_ROOT_USERNAME=admin
-ENV MONGO_INITDB_ROOT_PASSWORD=secret
-ENV MONGO_INITDB_DATABASE=testdb
+# 환경 변수는 CloudType에서 주입 받기
+ENV MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+ENV MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+ENV MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
 
-# init 스크립트 (여기에 넣으면 자동 실행됨)
+# init 스크립트 복사
 COPY init.js /docker-entrypoint-initdb.d/
 
-# non-root 권한 맞추기
-RUN chown -R 999:999 /data/db
-USER 999
+# CloudType 보안 정책: non-root 사용자로 실행
+USER mongodb
 
 EXPOSE 27017

@@ -12,16 +12,10 @@ ARG GROUP_ID=1001
 RUN groupadd -g ${GROUP_ID} mongodb || groupmod -g ${GROUP_ID} mongodb && \
     useradd -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash -m mongodb || usermod -u ${USER_ID} -g ${GROUP_ID} mongodb
 
-# 설정 파일과 초기화 스크립트 복사
-COPY mongod.conf /etc/mongod.conf
-COPY init-mongo.sh /usr/local/bin/init-mongo.sh
-
 # 필요한 디렉토리 생성 및 권한 설정
-RUN mkdir -p /data/db /data/configdb && \
-    chown -R mongodb:mongodb /data/db /data/configdb && \
-    chmod -R 755 /data/db /data/configdb && \
-    chown mongodb:mongodb /etc/mongod.conf /usr/local/bin/init-mongo.sh && \
-    chmod +x /usr/local/bin/init-mongo.sh
+RUN mkdir -p /data/db && \
+    chown -R mongodb:mongodb /data/db && \
+    chmod -R 755 /data/db
 
 # 포트 노출
 EXPOSE 27017
@@ -33,5 +27,5 @@ USER mongodb
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD mongosh --eval "db.adminCommand('ping')" --quiet || exit 1
 
-# 초기화 스크립트 실행
-CMD ["/usr/local/bin/init-mongo.sh"]
+# MongoDB 직접 실행 (초기화 스크립트 제거)
+CMD ["mongod", "--bind_ip_all", "--auth"]

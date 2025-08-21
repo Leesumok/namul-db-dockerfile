@@ -1,0 +1,36 @@
+# MongoDB 데이터 파일
+data/
+*.log
+
+# Docker 관련
+.dockerignore
+docker-compose.override.yml
+
+# 환경설정 파일 (민감한 정보 포함 시)
+.env
+.env.local
+.env.production
+
+# IDE 파일
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
+
+# 임시 파일
+*.tmp
+*.temp
+*.bak
+
+# 로그 파일
+logs/
+*.log
+
+# MongoDB 덤프 파일
+*.bson
+*.json.gz

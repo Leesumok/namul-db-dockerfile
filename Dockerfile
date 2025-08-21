@@ -9,15 +9,16 @@ ENV MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
 RUN usermod -u 1001 mongodb && \
     groupmod -g 1001 mongodb
 
-# 모든 필요한 디렉토리 생성 및 권한 설정
-RUN mkdir -p /data/db /data/configdb /var/log/mongodb /var/lib/mongodb && \
-    chown -R mongodb:mongodb /data/db /data/configdb /var/log/mongodb /var/lib/mongodb && \
-    chmod -R 755 /data/db /data/configdb /var/log/mongodb /var/lib/mongodb
+# 설정 파일과 초기화 스크립트 복사
+COPY mongod.conf /etc/mongod.conf
+COPY init-mongo.sh /usr/local/bin/init-mongo.sh
 
-# MongoDB 홈 디렉토리 권한 설정 (entrypoint 스크립트를 위해)
-RUN mkdir -p /home/mongodb && \
-    chown -R mongodb:mongodb /home/mongodb && \
-    chmod 755 /home/mongodb
+# 필요한 디렉토리 생성 및 권한 설정
+RUN mkdir -p /data/db /data/configdb /var/log/mongodb /var/run/mongodb && \
+    chown -R mongodb:mongodb /data/db /data/configdb /var/log/mongodb /var/run/mongodb && \
+    chmod -R 755 /data/db /data/configdb /var/log/mongodb /var/run/mongodb && \
+    chown mongodb:mongodb /etc/mongod.conf /usr/local/bin/init-mongo.sh && \
+    chmod +x /usr/local/bin/init-mongo.sh
 
 # 포트 노출
 EXPOSE 27017
@@ -29,5 +30,5 @@ USER mongodb
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD mongosh --eval "db.adminCommand('ping')" --quiet || exit 1
 
-# 직접 mongod 실행 (entrypoint 스크립트 우회)
-CMD ["mongod", "--bind_ip_all", "--port", "27017", "--dbpath", "/data/db", "--logpath", "/var/log/mongodb/mongod.log", "--logappend"]
+# 초기화 스크립트 실행
+CMD ["/usr/local/bin/init-mongo.sh"]

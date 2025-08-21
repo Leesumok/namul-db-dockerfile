@@ -9,13 +9,10 @@ ENV MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
 ARG USER_ID=1001
 ARG GROUP_ID=1001
 
-RUN groupadd -g ${GROUP_ID} mongodb || groupmod -g ${GROUP_ID} mongodb && \
-    useradd -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash -m mongodb || usermod -u ${USER_ID} -g ${GROUP_ID} mongodb
-
-# 필요한 디렉토리 생성 및 권한 설정
-RUN mkdir -p /data/db && \
-    chown -R mongodb:mongodb /data/db && \
-    chmod -R 755 /data/db
+# 기존 mongodb 사용자 수정
+RUN usermod -u ${USER_ID} mongodb && \
+    groupmod -g ${GROUP_ID} mongodb && \
+    chown -R mongodb:mongodb /data/db /data/configdb
 
 # 포트 노출
 EXPOSE 27017

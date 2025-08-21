@@ -5,9 +5,12 @@ ENV MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
 ENV MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 ENV MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
 
-# 기존 mongodb 사용자의 UID/GID 변경
-RUN usermod -u 1001 mongodb && \
-    groupmod -g 1001 mongodb
+# CloudType 보안 정책에 맞는 UID/GID 설정
+ARG USER_ID=1001
+ARG GROUP_ID=1001
+
+RUN groupadd -g ${GROUP_ID} mongodb || groupmod -g ${GROUP_ID} mongodb && \
+    useradd -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash -m mongodb || usermod -u ${USER_ID} -g ${GROUP_ID} mongodb
 
 # 설정 파일과 초기화 스크립트 복사
 COPY mongod.conf /etc/mongod.conf

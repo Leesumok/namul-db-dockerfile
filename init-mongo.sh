@@ -3,9 +3,13 @@ set -e
 
 echo "Starting MongoDB initialization..."
 
-# 로그 디렉토리 생성
-mkdir -p /var/log/mongodb /var/run/mongodb
-chown -R mongodb:mongodb /var/log/mongodb /var/run/mongodb
+# 디렉토리 권한 확인 및 생성 (non-root 사용자로 실행)
+if [ ! -d "/var/log/mongodb" ]; then
+    mkdir -p /var/log/mongodb 2>/dev/null || echo "Log directory already exists"
+fi
+if [ ! -d "/var/run/mongodb" ]; then
+    mkdir -p /var/run/mongodb 2>/dev/null || echo "Run directory already exists"
+fi
 
 # MongoDB를 백그라운드에서 시작 (인증 없이)
 mongod --config /etc/mongod.conf &
